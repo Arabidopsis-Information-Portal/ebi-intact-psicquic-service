@@ -15,7 +15,6 @@ def do_request(search_term):
     """Perform a request to SITE and return response."""
 
     url = urlparse.urljoin(EBI_INTACT_BASE_URL, search_term)
-    print "URL: %s" % url
     response = requests.get(url, verify=False, stream=True)
 
     # Raise exception and abort if requests is not successful
