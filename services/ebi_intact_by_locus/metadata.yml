@@ -1,0 +1,42 @@
+---
+
+name: ebi_intact_by_locus
+description: Given a valid AGI locus return it's molecular interactions from EBI's IntAct database
+version: 0.1
+tags:
+    - 'arabidopsis'
+    - 'interactions'
+
+authors:
+    - name: Erik Ferlanti
+      email: erik@jcvi.org
+      sponsor_organization: JCVI
+      sponsor_uri: http://www.jcvi.org
+
+type: query
+main_module: services.ebi_intact_by_locus.main.py
+url: http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/
+validate_request: true
+timeout: 120
+whitelist:
+    - www.ebi.ac.uk
+icon: IntAct_logo.png
+
+endpoints:
+    /search:
+        description: Return molecular interaction data for a given locus from EBI IntAct database and convert to json
+        parameters:
+            - name: locus
+              description: AGI Gene Locus identifier
+              type: string
+              required: true
+              default: AT1G01010
+
+sources:
+    - title: IntAct Molecular Interaction Database
+      description: Freely available, open source database system and analysis tools for molecular interaction data.
+      sponsor_organization_name:  EMBL-EBI
+      sponsor_uri: http://www.ebi.ac.uk
+      provider_name:
+      provider_email:
+      uri: http://www.ebi.ac.uk/intact/
