@@ -21,6 +21,8 @@ timeout: 120
 whitelist:
     - www.ebi.ac.uk
 icon: IntAct_logo.png
+requirements:
+    - requests
 
 endpoints:
     /search:
