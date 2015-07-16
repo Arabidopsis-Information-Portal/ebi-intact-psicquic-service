@@ -45,70 +45,62 @@ class MITabTextDecoder:
         return xref
 
 def getProteinXref(text):
-    protein_xref = {'id': '', 'url': ''}
-    ids = []
-    urls = []
+    protein_xrefs = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        ids.append(xref['value'])
+        record = { 'id': xref['value'], 'desc': xref['desc'] }
         if DATABASE_URLS.has_key(xref['key']):
             base_url = DATABASE_URLS[xref['key']]
-            urls.append("%s%s" % (base_url, xref['value']))
+            url = "%s%s" % (base_url, xref['value'])
         else:
-            urls.append(xref['key']+":"+xref['value'])
-    if (len(ids) > 0):
-        protein_xref['id'] = ", ".join(ids)
-        protein_xref['url'] = ", ".join(urls)
-    return protein_xref
+            url = xref['key'] + ":" + xref['value']
+        record['url'] = url
+        protein_xrefs.append(record)
+    return protein_xrefs
 
 def getInteractionXref(text):
-    interaction_xref = {'id': '', 'url': ''}
-    ids = []
-    urls = []
+    interaction_xrefs = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        ids.append(xref['value'])
+        record = { 'id': xref['value'] }
         if DATABASE_URLS.has_key(xref['key']):
             base_url = DATABASE_URLS[xref['key']]
-            urls.append("%sinteraction/%s" % (base_url, xref['value']))
+            url = "%sinteraction/%s" % (base_url, xref['value'])
+            record['desc'] = xref['value']
         else:
-            urls.append(xref['key']+":"+xref['value'])
-    if (len(ids) > 0):
-        interaction_xref['id'] = ", ".join(ids)
-        interaction_xref['url'] = ", ".join(urls)
-    return interaction_xref
+            url = xref['key'] + ":" + xref['value']
+            record['desc'] = url
+        record['url'] = url
+        interaction_xrefs.append(record)
+    return interaction_xrefs
 
 def getValueXref(text):
-    value_xref = {'id': '', 'url': ''}
-    ids = []
-    urls = []
+    value_xrefs = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        val = xref['key'] + ':' + xref['value']
-        ids.append(val)
+        record = { 'id': xref['value'] }
         if DATABASE_URLS.has_key(xref['key']):
             base_url = DATABASE_URLS[xref['key']]
-            urls.append("%s%s" % (base_url, xref['value']))
+            url = "%s%s" % (base_url, xref['value'])
+            record['desc'] = xref['value']
         else:
-            urls.append(val)
-    if (len(ids) > 0):
-        value_xref['id'] = ", ".join(ids)
-        value_xref['url'] = ", ".join(urls)
-    return value_xref
+            url = xref['key'] + ':' + xref['value']
+            record['desc'] = url
+        record['url'] = url
+        value_xrefs.append(record)
+    return value_xrefs
 
 def getValue(text):
-    value = ''
     values = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        values.append(xref['value'])
-    if (len(values) > 0):
-        value = ", ".join(values)
-    return value
+        record = { 'id': xref['value'], 'desc': xref['value'], 'url': '' }
+        values.append(record)
+    return values
 
 def getRawValue(text):
     value = ''
@@ -119,22 +111,19 @@ def getRawValue(text):
     return value
 
 def getDescriptionValueXref(text):
-    desc_xref = {'id': '', 'url': ''}
-    ids = []
-    urls = []
+    desc_xrefs = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        ids.append(xref['desc'])
+        record = { 'id': xref['value'], 'desc': xref['desc'] }
         if DATABASE_URLS.has_key(xref['key']):
             base_url = DATABASE_URLS[xref['key']]
-            urls.append("%s%s" % (base_url, xref['value']))
+            url = "%s%s" % (base_url, xref['value'])
         else:
-            urls.append(xref['key']+":"+xref['value'])
-    if (len(ids) > 0):
-        desc_xref['id'] = ", ".join(ids)
-        desc_xref['url'] = ", ".join(urls)
-    return desc_xref
+            url = xref['key'] + ":" + xref['value']
+        record['url'] = url
+        desc_xrefs.append(record)
+    return desc_xrefs
 
 def is_valid_agi_identifier(ident):
     p = re.compile(r'AT[1-5MC]G[0-9]{5,5}\.[0-9]+', re.IGNORECASE)
