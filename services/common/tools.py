@@ -8,7 +8,9 @@ DATABASE_URLS = {'uniprotkb': 'http://www.uniprot.org/uniprot/',
                  'intact': 'http://www.ebi.ac.uk/intact/',
                  'taxid': 'http://www.uniprot.org/taxonomy/',
                  'psi-mi': 'http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=',
-                 'pubmed': 'http://www.ncbi.nlm.nih.gov/pubmed/'}
+                 'pubmed': 'http://www.ncbi.nlm.nih.gov/pubmed/',
+                 'araport': 'https://apps.araport.org/thalemine/portal.do?class=Gene&externalids='}
+LOCUS_DESC = 'locus name'
 
 class MITabTextDecoder:
     def __init__(self, text):
@@ -98,7 +100,13 @@ def getValue(text):
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        record = { 'id': xref['value'], 'desc': xref['value'], 'url': '' }
+        if (xref['desc'] == LOCUS_DESC):
+            locus_id = xref['value'].upper()
+            base_url = DATABASE_URLS['araport']
+            url = "%s%s" % (base_url, locus_id)
+            record = { 'id': locus_id, 'desc': xref['desc'], 'url': url }
+        else:
+            record = { 'id': xref['value'], 'desc': xref['desc'], 'url': '' }
         values.append(record)
     return values
 
