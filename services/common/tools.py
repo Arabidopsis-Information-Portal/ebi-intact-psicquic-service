@@ -133,6 +133,52 @@ def getDescriptionValueXref(text):
         desc_xrefs.append(record)
     return desc_xrefs
 
+def getLocus(text):
+    decoder = MITabTextDecoder(text)
+    record = None
+    while decoder.hasNext():
+        xref = decoder.decodeXref()
+        if (xref['desc'] == LOCUS_DESC):
+            locus_id = xref['value'].upper()
+            base_url = DATABASE_URLS['araport']
+            url = "%s%s" % (base_url, locus_id)
+            record = { 'id': locus_id, 'desc': xref['desc'], 'url': url }
+    return record
+
+def createNodeRecord(ident, locus):
+    record = { 'data': {
+                   'id': ident['id'],
+                   'name': ident['id'],
+                   'url': ident['url'],
+                   'locus': locus['id'] if locus else "",
+                   'locus_url': locus['url'] if locus else ""
+                }
+            }
+    return record
+
+def createEdgeRecord(fields):
+    id_a = (getProteinXref(fields[0]))[0]
+    id_b = (getProteinXref(fields[1]))[0]
+    interaction_detect_methods = (getDescriptionValueXref(fields[6]))[0]
+    score = getRawValue(fields[14])
+    author = fields[7]
+    publication = getValueXref(fields[8])
+    sources = (getDescriptionValueXref(fields[12]))[0]
+    sep = ", "
+
+    record = { 'data': {
+                  'source': id_a['id'],
+                  'target': id_b['id'],
+                  'interaction_detection_method_id': interaction_detect_methods['id'],
+                  'interaction_detection_method_desc': interaction_detect_methods['desc'],
+                  'confidence_score': score,
+                  'first_author': author,
+                  'publication': sep.join(map(lambda x: x['id'], publication)),
+                  'source_database': sources['desc']
+                }
+            }
+    return record
+
 def is_valid_agi_identifier(ident):
     p = re.compile(r'AT[1-5MC]G[0-9]{5,5}\.[0-9]+', re.IGNORECASE)
     if not p.search(ident):
