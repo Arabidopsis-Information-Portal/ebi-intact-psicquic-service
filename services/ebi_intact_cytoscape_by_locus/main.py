@@ -7,8 +7,8 @@ def search(args):
 
     locus is AGI identifier and is mandatory
     """
-
     locus = args['locus'].upper()
+    dedupe = args['dedupe']
 
     """
     Make the request to the remote service
@@ -40,7 +40,12 @@ def search(args):
             proteins[id_b['id']] = 1
 
         # handle edges
-        edges.append(tools.createEdgeRecord(fields))
+        edge = tools.createEdgeRecord(fields)
+        if dedupe:
+            if not tools.isEdgeDuplicate(edges, edge):
+                edges.append(edge)
+        else:
+            edges.append(edge)
 
     elements = { 'nodes': nodes, 'edges': edges}
     return 'application/json', json.dumps(elements)

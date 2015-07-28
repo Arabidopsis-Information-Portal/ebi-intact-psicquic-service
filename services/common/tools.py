@@ -150,8 +150,8 @@ def createNodeRecord(ident, locus):
                    'id': ident['id'],
                    'name': ident['id'],
                    'url': ident['url'],
-                   'locus': locus['id'] if locus else "",
-                   'locus_url': locus['url'] if locus else ""
+                   'locus': locus['id'] if locus else ident['id'],
+                   'locus_url': locus['url'] if locus else ident['url']
                 }
             }
     return record
@@ -173,11 +173,23 @@ def createEdgeRecord(fields):
                   'interaction_detection_method_desc': interaction_detect_methods['desc'],
                   'confidence_score': score,
                   'first_author': author,
-                  'publication': sep.join(map(lambda x: x['id'], publication)),
+                  #'publication': sep.join(map(lambda x: x['id'], publication)),
+                  'publication': sep.join([p['id'] for p in publication]),
                   'source_database': sources['desc']
                 }
             }
     return record
+
+def isEdgeDuplicate(edges, edge):
+    duplicate = False
+    source = edge['data']['source']
+    target = edge['data']['target']
+    score = edge['data']['confidence_score']
+    method = edge['data']['interaction_detection_method_id']
+    for e in edges:
+        if ( ((source == e['data']['source'] and target == e['data']['target']) or (target == e['data']['source'] and source == e['data']['target'])) and method == e['data']['interaction_detection_method_id'] and score == e['data']['confidence_score'] ):
+            duplicate = True
+    return duplicate
 
 def is_valid_agi_identifier(ident):
     p = re.compile(r'AT[1-5MC]G[0-9]{5,5}\.[0-9]+', re.IGNORECASE)
