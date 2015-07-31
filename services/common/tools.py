@@ -142,6 +142,16 @@ def getDescriptionValueXref(text):
         desc_xrefs.append(record)
     return desc_xrefs
 
+def getScore(text):
+    decoder = MITabTextDecoder(text)
+    while decoder.hasNext():
+        xref = decoder.decodeXref()
+        if xref['key'] == 'intact-miscore':
+            value = xref['value']
+        else:
+            value = '-'
+    return value
+
 def getLocus(text):
     decoder = MITabTextDecoder(text)
     record = None
@@ -167,7 +177,7 @@ def createNodeRecord(ident, locus):
 
 def createEdgeRecord(id_a, id_b, fields):
     interaction_detect_methods = (getDescriptionValueXref(fields[6]))[0]
-    score = getRawValue(fields[14])
+    score = getScore(fields[14])
     author = fields[7]
     publication = getValueXref(fields[8])
     sources = (getDescriptionValueXref(fields[12]))[0]

@@ -42,7 +42,7 @@ def search(args):
                     'interaction_types': tools.getDescriptionValueXref(fields[11]),
                     'source_databases': tools.getDescriptionValueXref(fields[12]),
                     'interaction_identifiers_in_source': tools.getInteractionXref(fields[13]),
-                    'confidence_score': tools.getRawValue(fields[14])
+                    'confidence_score': tools.getScore(fields[14])
                 }
             }
         print json.dumps(record, indent=2)

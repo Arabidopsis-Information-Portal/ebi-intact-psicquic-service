@@ -2,7 +2,7 @@
 
 name: ebi_intact_cytoscape_by_locus
 description: Given a valid AGI locus return it's molecular interactions in cytoscape.js format from EBI's IntAct database
-version: 0.3
+version: 0.4
 tags:
     - 'arabidopsis'
     - 'interactions'

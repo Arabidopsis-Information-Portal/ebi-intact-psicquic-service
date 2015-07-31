@@ -2,7 +2,7 @@
 
 name: ebi_intact_by_locus
 description: Given a valid AGI locus return it's molecular interactions from EBI's IntAct database
-version: 0.2
+version: 0.3
 tags:
     - 'arabidopsis'
     - 'interactions'
