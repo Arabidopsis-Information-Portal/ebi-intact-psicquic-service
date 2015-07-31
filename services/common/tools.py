@@ -2,6 +2,7 @@ import requests
 import re
 import urlparse
 import json
+import itertools
 
 EBI_INTACT_BASE_URL = 'http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query/'
 DATABASE_URLS = {'uniprotkb': 'http://www.uniprot.org/uniprot/',
@@ -11,6 +12,8 @@ DATABASE_URLS = {'uniprotkb': 'http://www.uniprot.org/uniprot/',
                  'pubmed': 'http://www.ncbi.nlm.nih.gov/pubmed/',
                  'araport': 'https://apps.araport.org/thalemine/portal.do?class=Gene&externalids='}
 LOCUS_DESC = 'locus name'
+UNKNOWN_BASE = 'UNKNOWN_ID'
+UNKNOWN_COUNTER = itertools.count().next
 
 class MITabTextDecoder:
     def __init__(self, text):
@@ -46,18 +49,24 @@ class MITabTextDecoder:
                 xref['value'] = xref['value'][0:descIndex]
         return xref
 
+def nextUnknownValue():
+    return "%s-%s" % (UNKNOWN_BASE, UNKNOWN_COUNTER())
+
 def getProteinXref(text):
     protein_xrefs = []
     decoder = MITabTextDecoder(text)
     while decoder.hasNext():
         xref = decoder.decodeXref()
-        record = { 'id': xref['value'], 'desc': xref['desc'] }
-        if DATABASE_URLS.has_key(xref['key']):
-            base_url = DATABASE_URLS[xref['key']]
-            url = "%s%s" % (base_url, xref['value'])
+        if xref['value'] != '':
+            record = { 'id': xref['value'], 'desc': xref['desc'] }
+            if DATABASE_URLS.has_key(xref['key']):
+                base_url = DATABASE_URLS[xref['key']]
+                url = "%s%s" % (base_url, xref['value'])
+            else:
+                url = xref['key'] + ":" + xref['value']
+            record['url'] = url
         else:
-            url = xref['key'] + ":" + xref['value']
-        record['url'] = url
+            record = { 'id': nextUnknownValue(), 'desc': '', 'url': '' }
         protein_xrefs.append(record)
     return protein_xrefs
 
@@ -156,9 +165,7 @@ def createNodeRecord(ident, locus):
             }
     return record
 
-def createEdgeRecord(fields):
-    id_a = (getProteinXref(fields[0]))[0]
-    id_b = (getProteinXref(fields[1]))[0]
+def createEdgeRecord(id_a, id_b, fields):
     interaction_detect_methods = (getDescriptionValueXref(fields[6]))[0]
     score = getRawValue(fields[14])
     author = fields[7]
@@ -173,7 +180,6 @@ def createEdgeRecord(fields):
                   'interaction_detection_method_desc': interaction_detect_methods['desc'],
                   'confidence_score': score,
                   'first_author': author,
-                  #'publication': sep.join(map(lambda x: x['id'], publication)),
                   'publication': sep.join([p['id'] for p in publication]),
                   'source_database': sources['desc']
                 }

@@ -40,7 +40,7 @@ def search(args):
             proteins[id_b['id']] = 1
 
         # handle edges
-        edge = tools.createEdgeRecord(fields)
+        edge = tools.createEdgeRecord(id_a, id_b, fields)
         if dedupe:
             if not tools.isEdgeDuplicate(edges, edge):
                 edges.append(edge)
