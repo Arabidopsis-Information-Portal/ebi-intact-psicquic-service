@@ -17,6 +17,7 @@ type: generic
 main_module: services.ebi_intact_cytoscape_by_locus.main.py
 url: http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query
 validate_request: true
+timeout: 120
 whitelist:
     - www.ebi.ac.uk
 icon: IntAct_logo.png
